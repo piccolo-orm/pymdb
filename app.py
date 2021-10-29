@@ -39,7 +39,7 @@ ReviewModelOut = create_pydantic_model(
 
 
 @app.get("/reviews/", response_model=t.List[ReviewModelOut])
-async def tasks():
+async def reviews():
     return await Review.select().order_by(Review.id).run()
 
 
