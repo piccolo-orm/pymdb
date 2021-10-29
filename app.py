@@ -1,17 +1,18 @@
 import typing as t
 
-from piccolo_admin.endpoints import create_admin
-from piccolo_api.crud.serializers import create_pydantic_model
-from piccolo.engine import engine_finder
-from starlette.routing import Route, Mount
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from starlette.staticfiles import StaticFiles
+from piccolo.engine import engine_finder
+from piccolo_admin.endpoints import create_admin
+from piccolo_api.crud.serializers import create_pydantic_model
 from piccolo_api.fastapi.endpoints import (
     FastAPIWrapper,
     PiccoloCRUD,
     FastAPIKwargs,
 )
+from pydantic.main import BaseModel
+from starlette.routing import Route, Mount
+from starlette.staticfiles import StaticFiles
 
 from movies.endpoints import HomeEndpoint
 from movies.tables import Review, Movie
@@ -34,6 +35,21 @@ app = FastAPI(
 ###############################################################################
 # Some Pydantic models
 
+
+# If we were creating them by hand:
+class ReviewModel(BaseModel):
+    """
+    This is OK, but becomes error prone and tedious when we have lots of
+    columns.
+    """
+
+    name: str
+    review: str
+    score: int
+    movie: int
+
+
+# Using `create_pydantic_model` instead:
 ReviewModelIn = create_pydantic_model(table=Review, model_name="ReviewModelIn")
 ReviewModelOptional = create_pydantic_model(
     table=Review, model_name="ReviewModelOptional", all_optional=True
@@ -47,64 +63,95 @@ ReviewModelOut = create_pydantic_model(
 
 
 @app.get("/reviews/", response_model=t.List[ReviewModelOut], tags=["Review"])
-async def reviews():
+async def get_reviews():
+    """
+    Get all reviews.
+    """
     return await Review.select().order_by(Review.id).run()
 
 
+@app.get(
+    "/reviews/{review_id}/",
+    response_model=ReviewModelOut,
+    tags=["Review"],
+)
+async def get_review(review_id: int):
+    """
+    Get a single review.
+    """
+    review = await Review.select().where(Review.id == review_id).first().run()
+    if not review:
+        return JSONResponse({}, status_code=404)
+
+    return review
+
+
 @app.post("/reviews/", response_model=ReviewModelOut, tags=["Review"])
-async def create_review(task: ReviewModelIn):
-    task = Review(**task.__dict__)
-    await task.save().run()
-    return task.to_dict()
+async def create_review(review_model: ReviewModelIn):
+    """
+    Create a new review.
+    """
+    review = Review(**review_model.__dict__)
+    await review.save().run()
+    return review.to_dict()
 
 
 @app.put(
     "/reviews/{review_id}/", response_model=ReviewModelOut, tags=["Review"]
 )
-async def replace_review(review_id: int, task: ReviewModelIn):
-    _task = await Review.objects().where(Review.id == review_id).first().run()
-    if not _task:
+async def replace_review(review_id: int, review_model: ReviewModelIn):
+    """
+    Replace an existing review.
+    """
+    review = await Review.objects().where(Review.id == review_id).first().run()
+    if not review:
         return JSONResponse({}, status_code=404)
 
-    for key, value in task.__dict__.items():
-        setattr(_task, key, value)
+    for key, value in review_model.__dict__.items():
+        setattr(review, key, value)
 
-    await _task.save().run()
+    await review.save().run()
 
-    return _task.to_dict()
+    return review.to_dict()
 
 
 @app.patch(
     "/reviews/{review_id}/", response_model=ReviewModelOut, tags=["Review"]
 )
-async def update_review(review_id: int, task: ReviewModelIn):
-    _task = await Review.objects().where(Review.id == review_id).first().run()
-    if not _task:
+async def update_review(review_id: int, review_model: ReviewModelOptional):
+    """
+    Update a review.
+    """
+    review = await Review.objects().where(Review.id == review_id).first().run()
+    if not review:
         return JSONResponse({}, status_code=404)
 
-    for key, value in task.__dict__.items():
+    for key, value in review_model.__dict__.items():
         if value is not None:
-            setattr(_task, key, value)
+            setattr(review, key, value)
 
-    await _task.save().run()
+    await review.save().run()
 
-    return _task.to_dict()
+    return review.to_dict()
 
 
 @app.delete("/reviews/{review_id}/", tags=["Review"])
-async def delete_review(task_id: int):
-    task = await Review.objects().where(Review.id == task_id).first().run()
-    if not task:
+async def delete_review(review_id: int):
+    """
+    Delete a review.
+    """
+    review = await Review.objects().where(Review.id == review_id).first().run()
+    if not review:
         return JSONResponse({}, status_code=404)
 
-    await task.remove().run()
+    await review.remove().run()
 
     return JSONResponse({})
 
 
 ###############################################################################
 # Rather than defining the FastAPI endpoints by hand, we can use
-# FastAPIWrapper, which can save us a lot of time.
+# `FastAPIWrapper`, which can save us a lot of time.
 
 FastAPIWrapper(
     "/movies",
