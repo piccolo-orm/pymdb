@@ -8,7 +8,7 @@ Created for a presentation given at PyData Global 2021.
 
 ## Running it
 
-Create a Postgres database called 'pymdb'.
+Create a Postgres database called 'pymdb' (see `piccolo_conf.py` for the details).
 
 ```bash
 pip install -r requirements.txt
