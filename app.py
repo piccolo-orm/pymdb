@@ -7,9 +7,14 @@ from starlette.routing import Route, Mount
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
+from piccolo_api.fastapi.endpoints import (
+    FastAPIWrapper,
+    PiccoloCRUD,
+    FastAPIKwargs,
+)
 
 from movies.endpoints import HomeEndpoint
-from movies.tables import Review
+from movies.tables import Review, Movie
 from movies.piccolo_app import APP_CONFIG
 
 ###############################################################################
@@ -38,19 +43,19 @@ ReviewModelOut = create_pydantic_model(
 # Some traditional FastAPI endpoints
 
 
-@app.get("/reviews/", response_model=t.List[ReviewModelOut])
+@app.get("/reviews/", response_model=t.List[ReviewModelOut], tags=["Review"])
 async def reviews():
     return await Review.select().order_by(Review.id).run()
 
 
-@app.post("/reviews/", response_model=ReviewModelOut)
+@app.post("/reviews/", response_model=ReviewModelOut, tags=["Review"])
 async def create_review(task: ReviewModelIn):
     task = Review(**task.__dict__)
     await task.save().run()
     return ReviewModelOut(**task.__dict__)
 
 
-@app.put("/reviews/{task_id}/", response_model=ReviewModelOut)
+@app.put("/reviews/{task_id}/", response_model=ReviewModelOut, tags=["Review"])
 async def update_review(review_id: int, task: ReviewModelIn):
     _task = await Review.objects().where(Review.id == review_id).first().run()
     if not _task:
@@ -64,7 +69,7 @@ async def update_review(review_id: int, task: ReviewModelIn):
     return ReviewModelOut(**_task.__dict__)
 
 
-@app.delete("/reviews/{task_id}/")
+@app.delete("/reviews/{task_id}/", tags=["Review"])
 async def delete_review(task_id: int):
     task = await Review.objects().where(Review.id == task_id).first().run()
     if not task:
@@ -76,6 +81,21 @@ async def delete_review(task_id: int):
 
 
 ###############################################################################
+# Rather than defining the FastAPI endpoints by hand, we can use
+# FastAPIWrapper, which can save us a lot of time.
+
+FastAPIWrapper(
+    "/movies",
+    fastapi_app=app,
+    piccolo_crud=PiccoloCRUD(Movie, read_only=False),
+    fastapi_kwargs=FastAPIKwargs(
+        all_routes={"tags": ["Movie"]},
+    ),
+)
+
+
+###############################################################################
+# Connection pool.
 
 
 @app.on_event("startup")
