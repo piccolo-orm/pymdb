@@ -25,7 +25,7 @@ app = FastAPI(
         Route("/", HomeEndpoint),
         Mount(
             "/admin/",
-            create_admin(tables=APP_CONFIG.table_classes, site_name="PyMDB"),
+            create_admin(tables=APP_CONFIG.table_classes, site_name="PyMDb"),
         ),
         Mount("/static/", StaticFiles(directory="static")),
     ],

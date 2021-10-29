@@ -1,4 +1,4 @@
-# PyMDB
+# PyMDb
 
 Welcome to the Python Movie Database!
 
