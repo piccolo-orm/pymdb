@@ -21,15 +21,6 @@ from piccolo.columns.readable import Readable
 from piccolo.table import Table
 
 
-class Task(Table):
-    """
-    An example table.
-    """
-
-    name = Varchar()
-    completed = Boolean(default=False)
-
-
 class Director(Table, help_text="The main director for a movie."):
     class Gender(enum.Enum):
         male = "m"

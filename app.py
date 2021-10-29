@@ -9,9 +9,11 @@ from fastapi.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
 
 from movies.endpoints import HomeEndpoint
-from movies.tables import Task
+from movies.tables import Review
 from movies.piccolo_app import APP_CONFIG
 
+###############################################################################
+# Create the FastAPI instance
 
 app = FastAPI(
     routes=[
@@ -24,28 +26,33 @@ app = FastAPI(
     ],
 )
 
+###############################################################################
+# Some Pydantic models
 
-TaskModelIn = create_pydantic_model(table=Task, model_name="TaskModelIn")
-TaskModelOut = create_pydantic_model(
-    table=Task, include_default_columns=True, model_name="TaskModelOut"
+ReviewModelIn = create_pydantic_model(table=Review, model_name="ReviewModelIn")
+ReviewModelOut = create_pydantic_model(
+    table=Review, include_default_columns=True, model_name="ReviewModelOut"
 )
 
+###############################################################################
+# Some traditional FastAPI endpoints
 
-@app.get("/tasks/", response_model=t.List[TaskModelOut])
+
+@app.get("/reviews/", response_model=t.List[ReviewModelOut])
 async def tasks():
-    return await Task.select().order_by(Task.id).run()
+    return await Review.select().order_by(Review.id).run()
 
 
-@app.post("/tasks/", response_model=TaskModelOut)
-async def create_task(task: TaskModelIn):
-    task = Task(**task.__dict__)
+@app.post("/reviews/", response_model=ReviewModelOut)
+async def create_review(task: ReviewModelIn):
+    task = Review(**task.__dict__)
     await task.save().run()
-    return TaskModelOut(**task.__dict__)
+    return ReviewModelOut(**task.__dict__)
 
 
-@app.put("/tasks/{task_id}/", response_model=TaskModelOut)
-async def update_task(task_id: int, task: TaskModelIn):
-    _task = await Task.objects().where(Task.id == task_id).first().run()
+@app.put("/reviews/{task_id}/", response_model=ReviewModelOut)
+async def update_review(review_id: int, task: ReviewModelIn):
+    _task = await Review.objects().where(Review.id == review_id).first().run()
     if not _task:
         return JSONResponse({}, status_code=404)
 
@@ -54,12 +61,12 @@ async def update_task(task_id: int, task: TaskModelIn):
 
     await _task.save().run()
 
-    return TaskModelOut(**_task.__dict__)
+    return ReviewModelOut(**_task.__dict__)
 
 
-@app.delete("/tasks/{task_id}/")
-async def delete_task(task_id: int):
-    task = await Task.objects().where(Task.id == task_id).first().run()
+@app.delete("/reviews/{task_id}/")
+async def delete_review(task_id: int):
+    task = await Review.objects().where(Review.id == task_id).first().run()
     if not task:
         return JSONResponse({}, status_code=404)
 
