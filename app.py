@@ -35,6 +35,9 @@ app = FastAPI(
 # Some Pydantic models
 
 ReviewModelIn = create_pydantic_model(table=Review, model_name="ReviewModelIn")
+ReviewModelOptional = create_pydantic_model(
+    table=Review, model_name="ReviewModelOptional", all_optional=True
+)
 ReviewModelOut = create_pydantic_model(
     table=Review, include_default_columns=True, model_name="ReviewModelOut"
 )
@@ -52,11 +55,13 @@ async def reviews():
 async def create_review(task: ReviewModelIn):
     task = Review(**task.__dict__)
     await task.save().run()
-    return ReviewModelOut(**task.__dict__)
+    return task.to_dict()
 
 
-@app.put("/reviews/{task_id}/", response_model=ReviewModelOut, tags=["Review"])
-async def update_review(review_id: int, task: ReviewModelIn):
+@app.put(
+    "/reviews/{review_id}/", response_model=ReviewModelOut, tags=["Review"]
+)
+async def replace_review(review_id: int, task: ReviewModelIn):
     _task = await Review.objects().where(Review.id == review_id).first().run()
     if not _task:
         return JSONResponse({}, status_code=404)
@@ -66,10 +71,27 @@ async def update_review(review_id: int, task: ReviewModelIn):
 
     await _task.save().run()
 
-    return ReviewModelOut(**_task.__dict__)
+    return _task.to_dict()
 
 
-@app.delete("/reviews/{task_id}/", tags=["Review"])
+@app.patch(
+    "/reviews/{review_id}/", response_model=ReviewModelOut, tags=["Review"]
+)
+async def update_review(review_id: int, task: ReviewModelIn):
+    _task = await Review.objects().where(Review.id == review_id).first().run()
+    if not _task:
+        return JSONResponse({}, status_code=404)
+
+    for key, value in task.__dict__.items():
+        if value is not None:
+            setattr(_task, key, value)
+
+    await _task.save().run()
+
+    return _task.to_dict()
+
+
+@app.delete("/reviews/{review_id}/", tags=["Review"])
 async def delete_review(task_id: int):
     task = await Review.objects().where(Review.id == task_id).first().run()
     if not task:

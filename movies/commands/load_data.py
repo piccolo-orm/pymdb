@@ -16,8 +16,13 @@ def load_data():
     engine_type = Director._meta.db.engine_type
 
     if engine_type == "postgres":
-        # We need to update the sequence, as we explicitly set the IDs for the
-        # directors we just inserted
+        # We need to update the sequence, as we explicitly set the IDs.
         Director.raw(
             "SELECT setval('director_id_seq', max(id)) FROM director"
+        ).run_sync()
+        Director.raw(
+            "SELECT setval('movie_id_seq', max(id)) FROM movie"
+        ).run_sync()
+        Studio.raw(
+            "SELECT setval('studio_id_seq', max(id)) FROM studio"
         ).run_sync()

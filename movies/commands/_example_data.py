@@ -41,6 +41,7 @@ DIRECTORS = [
 
 MOVIES = [
     {
+        "id": 1,
         "name": "Star Wars: Episode IV - A New Hope",
         "rating": 93.3,
         "duration": datetime.timedelta(minutes=125),
@@ -58,6 +59,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 2,
         "name": "The Empire Strikes Back",
         "rating": 94.0,
         "duration": datetime.timedelta(minutes=127),
@@ -75,6 +77,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 3,
         "name": "Return of the Jedi",
         "rating": 82.0,
         "duration": datetime.timedelta(minutes=136),
@@ -92,6 +95,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 4,
         "name": "Star Wars: Episode I – The Phantom Menace",
         "rating": 53.0,
         "duration": datetime.timedelta(minutes=136),
@@ -110,6 +114,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 5,
         "name": "Star Wars: Episode II – Attack of the Clones",
         "rating": 65,
         "duration": datetime.timedelta(minutes=144),
@@ -127,6 +132,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 6,
         "name": "Star Wars: Episode III – Revenge of the Sith",
         "rating": 80.0,
         "duration": datetime.timedelta(minutes=140),
@@ -145,6 +151,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 7,
         "name": "Star Wars: The Force Awakens",
         "rating": 93.0,
         "duration": datetime.timedelta(minutes=135),
@@ -162,6 +169,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 8,
         "name": "Rogue One: A Star Wars Story",
         "rating": 83.1,
         "duration": datetime.timedelta(minutes=133),
@@ -179,6 +187,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 9,
         "name": "Star Wars: The Last Jedi",
         "rating": 91.2,
         "duration": datetime.timedelta(minutes=152),
@@ -196,6 +205,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 10,
         "name": "Solo: A Star Wars Story",
         "rating": 70.5,
         "duration": datetime.timedelta(minutes=135),
@@ -213,6 +223,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 11,
         "name": "Star Wars: The Rise of Skywalker",
         "rating": 54.7,
         "duration": datetime.timedelta(minutes=142),
@@ -230,6 +241,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 12,
         "name": "The Lord of the Rings: The Fellowship of the Ring",
         "rating": 91.1,
         "duration": datetime.timedelta(minutes=208),
@@ -248,6 +260,7 @@ MOVIES = [
         "genre": 1,
     },
     {
+        "id": 13,
         "name": "The Lord of the Rings: The Two Towers",
         "rating": 95.2,
         "duration": datetime.timedelta(minutes=223),
@@ -265,6 +278,7 @@ MOVIES = [
         "genre": 1,
     },
     {
+        "id": 14,
         "name": "The Lord of the Rings - The Return of the King",
         "rating": 93.0,
         "duration": datetime.timedelta(minutes=201),
@@ -282,6 +296,7 @@ MOVIES = [
         "genre": 1,
     },
     {
+        "id": 15,
         "name": "The Hobbit: An Unexpected Journey",
         "rating": 64.2,
         "duration": datetime.timedelta(minutes=182),
@@ -299,6 +314,7 @@ MOVIES = [
         "genre": 1,
     },
     {
+        "id": 16,
         "name": "The Hobbit: The Desolation of Smaug",
         "rating": 74.9,
         "duration": datetime.timedelta(minutes=187),
@@ -317,6 +333,7 @@ MOVIES = [
         "genre": 1,
     },
     {
+        "id": 17,
         "name": "The Hobbit: The Battle of the Five Armies",
         "rating": 59.0,
         "duration": datetime.timedelta(minutes=164),
@@ -334,6 +351,7 @@ MOVIES = [
         "genre": 2,
     },
     {
+        "id": 18,
         "name": "Snakes on a Plane",
         "rating": 54.0,
         "duration": datetime.timedelta(minutes=106),
@@ -355,6 +373,7 @@ MOVIES = [
 
 STUDIOS = [
     {
+        "id": 1,
         "name": "Shepperton Studios",
         "facilities": {
             "sound_stage": True,
