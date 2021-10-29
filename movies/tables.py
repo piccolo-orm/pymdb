@@ -1,8 +1,6 @@
 import enum
 
 from piccolo.columns import (
-    Varchar,
-    Boolean,
     JSON,
     Array,
     BigInt,
@@ -65,6 +63,10 @@ class Movie(Table):
     tags = Array(base_column=Varchar())
     barcode = BigInt(default=0)
     genre = SmallInt(choices=Genre, null=True)
+
+    @classmethod
+    def get_readable(cls):
+        return Readable(template="%s", columns=[cls.name])
 
 
 class Studio(Table, help_text="A movie studio."):
